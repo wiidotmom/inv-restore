@@ -9,6 +9,7 @@ import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.inventory.PlayerEnderChestContainer;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.ItemStackTemplate;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -45,6 +46,13 @@ public record SnapshotItems(List<ItemStack> inventory, List<ItemStack> armor, Li
                 .flatMap(List::stream)
                 .filter(item -> !item.isEmpty())
                 .map(ItemStack::copy);
+    }
+
+    public Stream<ItemStackTemplate> inventoryItemTemplates() {
+        return Stream.of(this.inventory, this.armor, this.offhand)
+                .flatMap(List::stream)
+                .filter(item -> !item.isEmpty())
+                .map(ItemStackTemplate::fromNonEmptyStack);
     }
 
     public Stream<ItemStack> allItems() {

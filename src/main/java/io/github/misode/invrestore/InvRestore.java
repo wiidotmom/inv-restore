@@ -8,7 +8,7 @@ import io.github.misode.invrestore.data.Snapshot;
 import io.github.misode.invrestore.gui.SnapshotGui;
 import net.fabricmc.api.ModInitializer;
 import net.fabricmc.fabric.api.command.v2.CommandRegistrationCallback;
-import net.fabricmc.fabric.api.entity.event.v1.ServerEntityWorldChangeEvents;
+import net.fabricmc.fabric.api.entity.event.v1.ServerEntityLevelChangeEvents;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerLifecycleEvents;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayConnectionEvents;
 import net.minecraft.core.BlockPos;
@@ -26,6 +26,7 @@ import net.minecraft.resources.Identifier;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.ItemStackTemplate;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.item.component.BundleContents;
 import net.minecraft.world.item.component.ItemLore;
@@ -80,7 +81,7 @@ public class InvRestore implements ModInitializer {
         ServerPlayConnectionEvents.DISCONNECT.register((listener, server) -> {
             addSnapshot(Snapshot.fromDisconnect(listener.player));
         });
-        ServerEntityWorldChangeEvents.AFTER_PLAYER_CHANGE_WORLD.register((player, origin, destination) -> {
+        ServerEntityLevelChangeEvents.AFTER_PLAYER_CHANGE_LEVEL.register((player, origin, destination) -> {
             addSnapshot(Snapshot.fromLevelChange(player, origin.dimension()));
         });
     }
@@ -150,11 +151,11 @@ public class InvRestore implements ModInitializer {
             hoverItem.set(DataComponents.LORE, new ItemLore(List.of(Component.literal("(click to view)")
                     .withStyle(Styles.LIST_DEFAULT.withItalic(false))
             )));
-            hoverItem.set(DataComponents.BUNDLE_CONTENTS, new BundleContents(snapshot.contents().inventoryItems().toList()));
+            hoverItem.set(DataComponents.BUNDLE_CONTENTS, new BundleContents(snapshot.contents().inventoryItemTemplates().toList()));
             CompoundTag snapshotPayload = new CompoundTag();
             snapshotPayload.put("id", StringTag.valueOf(snapshot.id()));
             Component items = Component.literal("(" + snapshot.contents().stackCount() + " stacks)").withStyle(Styles.LIST_HIGHLIGHT
-                    .withHoverEvent(new HoverEvent.ShowItem(hoverItem))
+                    .withHoverEvent(new HoverEvent.ShowItem(ItemStackTemplate.fromNonEmptyStack(hoverItem)))
                     .withClickEvent(new ClickEvent.Custom(InvRestore.VIEW_ACTION, Optional.of(snapshotPayload))));
 
             BlockPos pos = BlockPos.containing(snapshot.position());

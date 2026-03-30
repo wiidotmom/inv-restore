@@ -2,7 +2,7 @@ package io.github.misode.invrestore.gui;
 
 import eu.pb4.sgui.api.ClickType;
 import eu.pb4.sgui.api.gui.SimpleGui;
-import eu.pb4.sgui.api.gui.SlotGuiInterface;
+import eu.pb4.sgui.api.gui.SlotBasedGui;
 import io.github.misode.invrestore.Styles;
 import io.github.misode.invrestore.data.Snapshot;
 import net.minecraft.core.component.DataComponents;
@@ -33,7 +33,7 @@ public class SnapshotGui extends SimpleGui {
     }
 
     private void mapSlot(int guiSlot, int containerSlot) {
-        this.setSlotRedirect(guiSlot, new SnapshotSlot(this.container, containerSlot, 0, 0));
+        this.setSlot(guiSlot, new SnapshotSlot(this.container, containerSlot, 0, 0));
     }
 
     private void initDefaultView() {
@@ -70,13 +70,13 @@ public class SnapshotGui extends SimpleGui {
         }
     }
 
-    private void handleEnderChestClick(int index, ClickType type, Object action, SlotGuiInterface gui) {
+    private void handleEnderChestClick(int index, ClickType type, Object action, SlotBasedGui gui) {
         if (type.isLeft && !type.shift) {
             this.initEnderChestView();
         }
     }
 
-    private void handleChestClick(int index, ClickType type, Object action, SlotGuiInterface gui) {
+    private void handleChestClick(int index, ClickType type, Object action, SlotBasedGui gui) {
         if (type.isLeft && !type.shift) {
             this.initDefaultView();
         }
